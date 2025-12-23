@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Hengker Encoder X</title>
+
+<style>
+* { box-sizing: border-box }
+body {
+  margin: 0;
+  font-family: monospace;
+  color: #00ff99;
+  background: black;
+  overflow: hidden;
+}
+
+/* MATRIX */
+canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* LOADING */
+#loading {
+  position: fixed;
+  inset: 0;
+  background: black;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.loader-circle {
+  width: 80px;
+  height: 80px;
+  border: 4px solid #003b1f;
+  border-top: 4px solid #00ff99;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+.loader-bar {
+  width: 300px;
+  height: 6px;
+  background: #003b1f;
+  margin-top: 20px;
+  overflow: hidden;
+}
+.loader-bar div {
+  width: 0%;
+  height: 100%;
+  background: #00ff99;
+  animation: load 3s linear forwards;
+}
+@keyframes spin {
+  to { transform: rotate(360deg) }
+}
+@keyframes load {
+  to { width: 100% }
+}
+
+/* HEADER */
+.header {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+}
+.header img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 1px solid #00ff99;
+}
+.header span {
+  font-weight: bold;
+}
+
+/* APP */
+.container {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: 100px auto;
+  padding: 20px;
+  background: rgba(0,0,0,.75);
+  border: 1px solid #00ff99;
+  box-shadow: 0 0 30px #00ff9966;
+  border-radius: 10px;
+}
+
+h1 { text-align: center }
+
+textarea, input, select, button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  background: black;
+  color: #00ff99;
+  border: 1px solid #00ff99;
+  border-radius: 5px;
+}
+
+.row { display: flex; gap: 10px }
+
+button {
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover {
+  background: #00ff99;
+  color: black;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loader-circle"></div>
+  <div class="loader-bar"><div></div></div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <img src="https://img1.pixhost.to/images/11082/673355500_kotaro-md.jpg">
+  <span>yukazaa-developer</span>
+</div>
+
+<!-- APP -->
+<div class="container">
+<h1>🔐 Hengker Encoder X</h1>
+
+<input type="file" id="fileInput">
+<textarea id="input" rows="6" placeholder="Paste kode atau upload file..."></textarea>
+
+<div class="row">
+<select id="type">
+  <option value="js">JavaScript</option>
+  <option value="java">Java</option>
+  <option value="python">Python</option>
+  <option value="html">HTML</option>
+  <option value="text">Text</option>
+</select>
+
+<select id="level">
+  <option value="easy">Easy</option>
+  <option value="normal">Normal</option>
+  <option value="high">High</option>
+</select>
+</div>
+
+<input id="customName" placeholder="Custom encoder name (misal: yuka-x)">
+
+<button onclick="encode()">ENCODE</button>
+
+<textarea id="output" rows="8" placeholder="Hasil encode..."></textarea>
+
+<input id="filename" placeholder="Nama file output">
+<button onclick="download()">DOWNLOAD</button>
+
+</div>
+
+<script>
+/* LOADING */
+setTimeout(() => document.getElementById("loading").style.display = "none", 3200)
+
+/* MATRIX */
+const c = document.getElementById("matrix")
+const x = c.getContext("2d")
+c.width = innerWidth
+c.height = innerHeight
+const chars = "01ハッカー暗号安全数据编码"
+const size = 14
+const cols = c.width / size
+const drops = Array.from({length: cols}).fill(1)
+
+setInterval(() => {
+  x.fillStyle = "rgba(0,0,0,0.05)"
+  x.fillRect(0,0,c.width,c.height)
+  x.fillStyle = "#00ff99"
+  x.font = size+"px monospace"
+  drops.forEach((y,i)=>{
+    const t = chars[Math.floor(Math.random()*chars.length)]
+    x.fillText(t, i*size, y*size)
+    drops[i] = y*size > c.height && Math.random()>0.95 ? 0 : y+1
+  })
+}, 33)
+
+/* FILE */
+fileInput.onchange = () => {
+  const f = fileInput.files[0]
+  if (!f) return
+  const r = new FileReader()
+  r.onload = e => input.value = e.target.result
+  r.readAsText(f)
+}
+
+/* ENCODER */
+const b64 = s => btoa(unescape(encodeURIComponent(s)))
+
+function chaosEncode(str) {
+  return str.split("").map(c =>
+    Math.random() > 0.5
+      ? String.fromCharCode(0x4e00 + Math.random()*2000)
+      : c
+  ).join("")
+}
+
+function encode() {
+  let code = input.value
+  if (!code) return
+
+  const type = typeSelect.value
+  const level = levelSelect.value
+  const name = customName.value || "encoder-x"
+
+  if (level !== "easy") code = chaosEncode(code)
+
+  let enc = b64(code)
+  if (level !== "easy") enc = b64(enc)
+  if (level === "high") enc = b64(enc)
+
+  output.value = type === "js"
+? `/* Encoded by ${name} */
+(function(){var _="${enc}";var d=atob(_);${level!=="easy"?"d=atob(d);":""}${level==="high"?"d=atob(d);":""}eval(d)})();`
+: `/* Encoded by ${name} */\n${enc}`
+}
+
+function download() {
+  const blob = new Blob([output.value])
+  const a = document.createElement("a")
+  a.href = URL.createObjectURL(blob)
+  a.download = filename.value || "encoded.txt"
+  a.click()
+}
+</script>
+
+</body>
+</html>
