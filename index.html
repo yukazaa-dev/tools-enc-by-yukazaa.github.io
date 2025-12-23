@@ -2,92 +2,155 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Hengker Encoder ∞</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hengker Encoder ∞ Full Version</title>
 
 <style>
+:root {
+  --main-color: #00ff99; 
+  --glow: rgba(0, 255, 153, 0.4);
+}
+
 *{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:monospace;
-  color:#00ff99;
-  background:black;
-  overflow:hidden;
+ margin:0;
+ font-family:monospace;
+ background:black;
+ color: var(--main-color);
+ overflow-x:hidden;
 }
 canvas{position:fixed;inset:0;z-index:0}
 
+/* FLOATING THEME MENU */
+.theme-wrapper {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 100;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 10px;
+}
+
+.main-theme-btn {
+    width: 45px; height: 45px;
+    border-radius: 50%;
+    background: black;
+    border: 2px solid var(--main-color);
+    color: var(--main-color);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 10px var(--glow);
+}
+
+.sub-themes {
+    display: flex; gap: 8px;
+    background: rgba(0,0,0,0.85);
+    padding: 8px 15px;
+    border-radius: 30px;
+    border: 1px solid var(--main-color);
+    opacity: 0; transform: translateX(20px);
+    pointer-events: none; transition: 0.3s;
+}
+
+.theme-wrapper:hover .sub-themes {
+    opacity: 1; transform: translateX(0);
+    pointer-events: auto;
+}
+
+.dot { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 1px solid #fff; }
+
+.rgb-btn {
+    background: linear-gradient(45deg, red, yellow, blue, green);
+    border: none; color: white; font-size: 9px; font-weight: bold;
+    padding: 4px 8px; border-radius: 10px; cursor: pointer;
+}
+
 /* HEADER */
 .header{
-  position:fixed;top:15px;left:15px;
-  display:flex;gap:10px;align-items:center;
-  z-index:2
+ position:fixed; top:15px; left:15px;
+ display:flex; align-items:center; gap:12px; z-index:2;
 }
-.header img{
-  width:45px;height:45px;border-radius:50%;
-  border:1px solid #00ff99
-}
+.header img{ width:50px; height:50px; border-radius:50%; border:2px solid var(--main-color); }
 
-/* APP */
+/* CONTAINER */
 .container{
-  position:relative;z-index:2;
-  max-width:900px;margin:100px auto;
-  padding:20px;
-  background:rgba(0,0,0,.8);
-  border:1px solid #00ff99;
-  box-shadow:0 0 30px #00ff9966;
-  border-radius:10px
+ position:relative; z-index:2;
+ max-width:900px; margin:90px auto; padding:25px;
+ background:rgba(0,0,0,.85);
+ border:2px solid var(--main-color);
+ border-radius:15px;
+ box-shadow:0 0 30px var(--glow);
 }
-textarea,input,select,button{
-  width:100%;margin-top:10px;
-  padding:12px;background:black;
-  color:#00ff99;border:1px solid #00ff99;
-  border-radius:5px
-}
-.row{display:flex;gap:10px}
-button{cursor:pointer;font-weight:bold}
-button:hover{background:#00ff99;color:black}
 
-/* LOADING ENC */
+h2{text-align:center; font-size:24px; text-shadow: 0 0 10px var(--main-color);}
+
+textarea,input,select,button{
+ width:100%; margin-top:12px; padding:14px;
+ background:black; color: var(--main-color);
+ border:1px solid var(--main-color);
+ border-radius:8px; font-size:15px; outline: none;
+}
+textarea{min-height:120px}
+
+button{ font-weight:bold; cursor:pointer; transition: 0.2s; }
+button:hover{ background: var(--main-color); color:black; }
+
+.row{ display:flex; gap:10px; flex-wrap:wrap }
+
 #encLoading{
-  display:none;
-  margin-top:10px;
-  border:1px solid #00ff99;
-  padding:10px;
-  height:150px;
-  overflow:auto;
-  font-size:12px;
-  background:black;
+ display:none; margin-top:15px; padding:12px;
+ height:150px; overflow:auto;
+ background:black; border:1px solid var(--main-color);
+ font-size:13px; white-space: pre-wrap;
 }
 </style>
 </head>
 
 <body>
-
 <canvas id="matrix"></canvas>
 
+<div class="theme-wrapper">
+    <button class="main-theme-btn">🎨</button>
+    <div class="sub-themes">
+        <div class="dot" style="background:#00ff99" onclick="changeTheme('#00ff99')"></div>
+        <div class="dot" style="background:#ff3333" onclick="changeTheme('#ff3333')"></div>
+        <div class="dot" style="background:#3399ff" onclick="changeTheme('#3399ff')"></div>
+        <div class="dot" style="background:#ffff00" onclick="changeTheme('#ffff00')"></div>
+        <button class="rgb-btn" onclick="toggleRGB()">RGB</button>
+    </div>
+</div>
+
 <div class="header">
-  <img src="https://img1.pixhost.to/images/11082/673355500_kotaro-md.jpg">
-  <span>yuka-dev</span>
+ <img src="https://img1.pixhost.to/images/11082/673355500_kotaro-md.jpg">
+ <span>yuka-dev</span>
 </div>
 
 <div class="container">
-<h2 style="text-align:center">🔐 Hengker Encoder Ultimate</h2>
+<h2>🔐 Tools Hengker Encoder Ultimate</h2>
 
 <input type="file" id="fileInput">
-<textarea id="input" rows="5" placeholder="Paste kode / upload file..."></textarea>
+<textarea id="input" placeholder="Paste kode / upload file..."></textarea>
 
 <div class="row">
 <select id="type">
-  <option value="js">JavaScript</option>
-  <option value="text">Text / Other</option>
+ <option value="js">JavaScript</option>
+ <option value="node">NodeJS</option>
+ <option value="py">Python</option>
+ <option value="php">PHP</option>
+ <option value="java">Java</option>
+ <option value="text">Text / Other</option>
 </select>
 
 <select id="level">
-  <option value="1">Level 1</option>
-  <option value="2">Level 2</option>
-  <option value="3">Level 3</option>
-  <option value="4">Level 4</option>
-  <option value="5">Level 5</option>
-  <option value="6">Level 6</option>
+ <option value="1">Level 1</option>
+ <option value="2">Level 2</option>
+ <option value="3">Level 3</option>
+ <option value="4">Level 4</option>
+ <option value="5">Level 5</option>
+ <option value="6">Level 6</option>
 </select>
 </div>
 
@@ -99,29 +162,51 @@ button:hover{background:#00ff99;color:black}
 <button onclick="setCharset('mix')">ENC RANDOM</button>
 </div>
 
-<button onclick="startEncode()">ENCODE</button>
+<button onclick="startEncode()" style="background: rgba(0,255,153,0.1); border-width: 2px;">START ENCODE</button>
 
 <div id="encLoading"></div>
 
-<textarea id="output" rows="7" placeholder="Hasil encode..."></textarea>
-<input id="filename" placeholder="Nama file output">
-<button onclick="download()">DOWNLOAD</button>
+<textarea id="output" placeholder="Hasil encode..." readonly></textarea>
+<button onclick="copyToClipboard()" style="background:#333; color:#fff; border:none; margin-top:5px;">📋 COPY HASIL</button>
+
+<div class="row">
+<input id="filename" placeholder="Nama file output" style="flex:2">
+<button onclick="download()" style="flex:1">DOWNLOAD</button>
+</div>
 </div>
 
 <script>
+/* THEME ENGINE */
+let rgbInterval = null;
+function changeTheme(color) {
+    stopRGB();
+    document.documentElement.style.setProperty('--main-color', color);
+    document.documentElement.style.setProperty('--glow', color + '66');
+}
+function toggleRGB() {
+    if(rgbInterval) return stopRGB();
+    rgbInterval = setInterval(() => {
+        let h = Math.floor(Math.random() * 360);
+        let color = `hsl(${h}, 100%, 50%)`;
+        document.documentElement.style.setProperty('--main-color', color);
+        document.documentElement.style.setProperty('--glow', color);
+    }, 200);
+}
+function stopRGB() { clearInterval(rgbInterval); rgbInterval = null; }
+
 /* MATRIX */
-const mc=document.getElementById("matrix"),mx=mc.getContext("2d")
-mc.width=innerWidth;mc.height=innerHeight
-const mchars="01ハッカー暗号数据安全"
-const drops=Array(Math.floor(mc.width/14)).fill(1)
+const c=document.getElementById("matrix"),x=c.getContext("2d")
+c.width=innerWidth;c.height=innerHeight
+const chars="01ハッカー暗号数据安全"
+const drops=Array(Math.floor(c.width/14)).fill(1)
 setInterval(()=>{
- mx.fillStyle="rgba(0,0,0,0.05)"
- mx.fillRect(0,0,mc.width,mc.height)
- mx.fillStyle="#00ff99"
- mx.font="14px monospace"
+ x.fillStyle="rgba(0,0,0,0.05)"
+ x.fillRect(0,0,c.width,c.height)
+ x.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--main-color');
+ x.font="15px monospace"
  drops.forEach((y,i)=>{
-  mx.fillText(mchars[Math.random()*mchars.length|0],i*14,y*14)
-  drops[i]=y*14>mc.height&&Math.random()>0.95?0:y+1
+  x.fillText(chars[Math.random()*chars.length|0],i*14,y*14)
+  drops[i]=y*14>c.height&&Math.random()>0.97?0:y+1
  })
 },33)
 
@@ -134,64 +219,67 @@ fileInput.onchange=()=>{
  r.readAsText(f)
 }
 
-/* ENCODER */
+/* ENCODER CORE */
 let charset="jp"
 const sets={
- jp:"日本語暗号化安全",
- cn:"加密数据安全防护",
+ jp:"日本語暗号化安全秘密",
+ cn:"加密数据安全防护系统",
  kr:"암호화보안시스템",
  ar:"تشفيرآمنبيانات",
- mix:"日本加密암호화安全암호화"
+ mix:"日本加密암호화安全系统"
 }
+
 const b64=s=>btoa(unescape(encodeURIComponent(s)))
 
-function chaos(s){
- return s.split("").map(c=>
-  Math.random()>.6
-   ? sets[charset][Math.random()*sets[charset].length|0]
-   : c
- ).join("")
+function setCharset(c){charset=c; alert("Charset set to: " + c.toUpperCase())}
+
+function injectCharset(str){
+ const map=sets[charset]
+ return str.split("").map(c=> Math.random()>.55 ? map[Math.random()*map.length|0] : c ).join("")
 }
 
-function setCharset(c){charset=c}
-
 function startEncode(){
- const log=document.getElementById("encLoading")
+ if(!input.value) return alert("Input kosong!")
+ const log=encLoading
  log.style.display="block"
  log.textContent=""
- let step=0
- const msgs=[
-  "[+] Initializing encoder...",
-  "[+] Loading chaos engine...",
-  "[+] Applying unicode injection...",
-  "[+] Wrapping layers...",
-  "[+] Finalizing payload..."
- ]
- const timer=setInterval(()=>{
-  log.textContent+=msgs[step]+"\n"
+ let i=0
+ const steps=["[+] Booting encoder...", "[+] Locking charset...", "[+] Injecting unicode...", "[+] Wrapping layers...", "[+] Finalizing..."]
+ const t=setInterval(()=>{
+  log.textContent+=steps[i]+"\n"
   log.scrollTop=log.scrollHeight
-  step++
-  if(step===msgs.length){
-    clearInterval(timer)
-    setTimeout(encode,20000) // 20 DETIK DELAY
+  i++
+  if(i===steps.length){
+   clearInterval(t)
+   setTimeout(encode, 2000) // Saya percepat jadi 2 detik biar gak kelamaan nunggu, bisa ubah ke 20000 kalau mau asli
   }
- },800)
+ },700)
 }
 
 function encode(){
  let code=input.value
- if(!code)return
-
- const lvl=parseInt(level.value)
-
+ const lvl=+level.value
  for(let i=0;i<lvl;i++) code=b64(code)
- if(lvl>=4) code=chaos(code)
- if(lvl>=5) code=b64(code.split("").reverse().join(""))
- if(lvl===6) code=b64("/*LOCKED*/"+code)
 
- output.value= type.value==="js"
- ? `(function(){eval(atob("${code}"))})();`
- : code
+ if(lvl>=3) code=injectCharset(code)
+ if(lvl>=5) code=b64(code.split("").reverse().join(""))
+ if(lvl===6) code=b64("/*LOCKED-"+charset+"*/"+code)
+
+ const wrap={
+  js:`(function(){eval(atob("${code}"))})();`,
+  node:`Buffer.from("${code}","base64").toString()`,
+  py:`import base64;exec(base64.b64decode("${code}"))`,
+  php:`<?php eval(base64_decode("${code}")); ?>`,
+  java:`// Encoded\nString d="${code}";`,
+  text:code
+ }
+ output.value=wrap[type.value]
+}
+
+function copyToClipboard() {
+    output.select();
+    document.execCommand("copy");
+    alert("Copied to clipboard!");
 }
 
 function download(){
@@ -202,6 +290,5 @@ function download(){
  a.click()
 }
 </script>
-
 </body>
 </html>
