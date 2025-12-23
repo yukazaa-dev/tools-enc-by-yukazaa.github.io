@@ -21,7 +21,7 @@ canvas {
   z-index: 0;
 }
 
-/* LOADING */
+/* LOADING SCREEN */
 #loading {
   position: fixed;
   inset: 0;
@@ -40,25 +40,19 @@ canvas {
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
-.loader-bar {
+.loader-bar, .encode-bar {
   width: 300px;
   height: 6px;
   background: #003b1f;
-  margin-top: 20px;
+  margin-top: 15px;
   overflow: hidden;
 }
-.loader-bar div {
+.loader-bar div, .encode-bar div {
   width: 0%;
   height: 100%;
   background: #00ff99;
-  animation: load 3s linear forwards;
 }
-@keyframes spin {
-  to { transform: rotate(360deg) }
-}
-@keyframes load {
-  to { width: 100% }
-}
+@keyframes spin { to { transform: rotate(360deg) } }
 
 /* HEADER */
 .header {
@@ -76,9 +70,7 @@ canvas {
   border-radius: 50%;
   border: 1px solid #00ff99;
 }
-.header span {
-  font-weight: bold;
-}
+.header span { font-weight: bold }
 
 /* APP */
 .container {
@@ -93,8 +85,6 @@ canvas {
   border-radius: 10px;
 }
 
-h1 { text-align: center }
-
 textarea, input, select, button {
   width: 100%;
   margin-top: 10px;
@@ -108,12 +98,18 @@ textarea, input, select, button {
 .row { display: flex; gap: 10px }
 
 button {
-  font-weight: bold;
   cursor: pointer;
+  font-weight: bold;
 }
 button:hover {
   background: #00ff99;
   color: black;
+}
+
+/* ENCODE LOADING */
+#encodeLoading {
+  display: none;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -122,7 +118,7 @@ button:hover {
 
 <canvas id="matrix"></canvas>
 
-<!-- LOADING -->
+<!-- START LOADING -->
 <div id="loading">
   <div class="loader-circle"></div>
   <div class="loader-bar"><div></div></div>
@@ -131,14 +127,15 @@ button:hover {
 <!-- HEADER -->
 <div class="header">
   <img src="https://img1.pixhost.to/images/11082/673355500_kotaro-md.jpg">
-  <span>yukazaa-developer</span>
+  <span>yuka-dev</span>
 </div>
 
 <!-- APP -->
 <div class="container">
-<h1>🔐 Hengker Encoder X</h1>
+<h2 style="text-align:center">🔐 Hengker Encoder X</h2>
 
 <input type="file" id="fileInput">
+
 <textarea id="input" rows="6" placeholder="Paste kode atau upload file..."></textarea>
 
 <div class="row">
@@ -157,24 +154,36 @@ button:hover {
 </select>
 </div>
 
-<input id="customName" placeholder="Custom encoder name (misal: yuka-x)">
+<input id="customName" placeholder="Custom encoder name">
 
-<button onclick="encode()">ENCODE</button>
+<button onclick="startEncode()">ENCODE</button>
+
+<div id="encodeLoading">
+  <div class="encode-bar"><div></div></div>
+</div>
 
 <textarea id="output" rows="8" placeholder="Hasil encode..."></textarea>
 
-<input id="filename" placeholder="Nama file output">
+<input id="filename" placeholder="Nama file output (bot.enc.js)">
 <button onclick="download()">DOWNLOAD</button>
-
 </div>
 
 <script>
-/* LOADING */
-setTimeout(() => document.getElementById("loading").style.display = "none", 3200)
+/* ===== START LOADING ===== */
+const loadBar = document.querySelector(".loader-bar div")
+let lp = 0
+const loadInt = setInterval(() => {
+  lp += 5
+  loadBar.style.width = lp + "%"
+  if (lp >= 100) {
+    clearInterval(loadInt)
+    setTimeout(() => loading.style.display = "none", 300)
+  }
+}, 80)
 
-/* MATRIX */
+/* ===== MATRIX ===== */
 const c = document.getElementById("matrix")
-const x = c.getContext("2d")
+const ctx = c.getContext("2d")
 c.width = innerWidth
 c.height = innerHeight
 const chars = "01ハッカー暗号安全数据编码"
@@ -183,18 +192,18 @@ const cols = c.width / size
 const drops = Array.from({length: cols}).fill(1)
 
 setInterval(() => {
-  x.fillStyle = "rgba(0,0,0,0.05)"
-  x.fillRect(0,0,c.width,c.height)
-  x.fillStyle = "#00ff99"
-  x.font = size+"px monospace"
+  ctx.fillStyle = "rgba(0,0,0,0.05)"
+  ctx.fillRect(0,0,c.width,c.height)
+  ctx.fillStyle = "#00ff99"
+  ctx.font = size + "px monospace"
   drops.forEach((y,i)=>{
     const t = chars[Math.floor(Math.random()*chars.length)]
-    x.fillText(t, i*size, y*size)
+    ctx.fillText(t, i*size, y*size)
     drops[i] = y*size > c.height && Math.random()>0.95 ? 0 : y+1
   })
 }, 33)
 
-/* FILE */
+/* ===== FILE UPLOAD ===== */
 fileInput.onchange = () => {
   const f = fileInput.files[0]
   if (!f) return
@@ -203,24 +212,41 @@ fileInput.onchange = () => {
   r.readAsText(f)
 }
 
-/* ENCODER */
+/* ===== ENCODER CORE ===== */
 const b64 = s => btoa(unescape(encodeURIComponent(s)))
 
 function chaosEncode(str) {
   return str.split("").map(c =>
-    Math.random() > 0.5
+    Math.random() > 0.6
       ? String.fromCharCode(0x4e00 + Math.random()*2000)
       : c
   ).join("")
+}
+
+function startEncode() {
+  const bar = document.querySelector(".encode-bar div")
+  document.getElementById("encodeLoading").style.display = "block"
+  bar.style.width = "0%"
+  let p = 0
+
+  const anim = setInterval(() => {
+    p += 10
+    bar.style.width = p + "%"
+    if (p >= 100) {
+      clearInterval(anim)
+      document.getElementById("encodeLoading").style.display = "none"
+      encode()
+    }
+  }, 80)
 }
 
 function encode() {
   let code = input.value
   if (!code) return
 
-  const type = typeSelect.value
-  const level = levelSelect.value
-  const name = customName.value || "encoder-x"
+  const type = document.getElementById("type").value
+  const level = document.getElementById("level").value
+  const name = document.getElementById("customName").value || "encoder-x"
 
   if (level !== "easy") code = chaosEncode(code)
 
@@ -229,15 +255,22 @@ function encode() {
   if (level === "high") enc = b64(enc)
 
   output.value = type === "js"
-? `/* Encoded by ${name} */
-(function(){var _="${enc}";var d=atob(_);${level!=="easy"?"d=atob(d);":""}${level==="high"?"d=atob(d);":""}eval(d)})();`
-: `/* Encoded by ${name} */\n${enc}`
+    ? `/* Encoded by ${name} */
+(function(){
+  var _="${enc}";
+  var d=atob(_);
+  ${level !== "easy" ? "d=atob(d);" : ""}
+  ${level === "high" ? "d=atob(d);" : ""}
+  eval(d);
+})();`
+    : `/* Encoded by ${name} */\n${enc}`
 }
 
+/* ===== DOWNLOAD ===== */
 function download() {
-  const blob = new Blob([output.value])
+  if (!output.value) return
   const a = document.createElement("a")
-  a.href = URL.createObjectURL(blob)
+  a.href = URL.createObjectURL(new Blob([output.value]))
   a.download = filename.value || "encoded.txt"
   a.click()
 }
