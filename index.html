@@ -2,114 +2,60 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Hengker Encoder X</title>
+<title>Hengker Encoder ∞</title>
 
 <style>
-* { box-sizing: border-box }
-body {
-  margin: 0;
-  font-family: monospace;
-  color: #00ff99;
-  background: black;
-  overflow: hidden;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:monospace;
+  color:#00ff99;
+  background:black;
+  overflow:hidden;
 }
-
-/* MATRIX */
-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-}
-
-/* LOADING SCREEN */
-#loading {
-  position: fixed;
-  inset: 0;
-  background: black;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.loader-circle {
-  width: 80px;
-  height: 80px;
-  border: 4px solid #003b1f;
-  border-top: 4px solid #00ff99;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-.loader-bar, .encode-bar {
-  width: 300px;
-  height: 6px;
-  background: #003b1f;
-  margin-top: 15px;
-  overflow: hidden;
-}
-.loader-bar div, .encode-bar div {
-  width: 0%;
-  height: 100%;
-  background: #00ff99;
-}
-@keyframes spin { to { transform: rotate(360deg) } }
+canvas{position:fixed;inset:0;z-index:0}
 
 /* HEADER */
-.header {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 2;
+.header{
+  position:fixed;top:15px;left:15px;
+  display:flex;gap:10px;align-items:center;
+  z-index:2
 }
-.header img {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  border: 1px solid #00ff99;
+.header img{
+  width:45px;height:45px;border-radius:50%;
+  border:1px solid #00ff99
 }
-.header span { font-weight: bold }
 
 /* APP */
-.container {
-  position: relative;
-  z-index: 2;
-  max-width: 900px;
-  margin: 100px auto;
-  padding: 20px;
-  background: rgba(0,0,0,.75);
-  border: 1px solid #00ff99;
-  box-shadow: 0 0 30px #00ff9966;
-  border-radius: 10px;
+.container{
+  position:relative;z-index:2;
+  max-width:900px;margin:100px auto;
+  padding:20px;
+  background:rgba(0,0,0,.8);
+  border:1px solid #00ff99;
+  box-shadow:0 0 30px #00ff9966;
+  border-radius:10px
 }
-
-textarea, input, select, button {
-  width: 100%;
-  margin-top: 10px;
-  padding: 12px;
-  background: black;
-  color: #00ff99;
-  border: 1px solid #00ff99;
-  border-radius: 5px;
+textarea,input,select,button{
+  width:100%;margin-top:10px;
+  padding:12px;background:black;
+  color:#00ff99;border:1px solid #00ff99;
+  border-radius:5px
 }
+.row{display:flex;gap:10px}
+button{cursor:pointer;font-weight:bold}
+button:hover{background:#00ff99;color:black}
 
-.row { display: flex; gap: 10px }
-
-button {
-  cursor: pointer;
-  font-weight: bold;
-}
-button:hover {
-  background: #00ff99;
-  color: black;
-}
-
-/* ENCODE LOADING */
-#encodeLoading {
-  display: none;
-  margin-top: 10px;
+/* LOADING ENC */
+#encLoading{
+  display:none;
+  margin-top:10px;
+  border:1px solid #00ff99;
+  padding:10px;
+  height:150px;
+  overflow:auto;
+  font-size:12px;
+  background:black;
 }
 </style>
 </head>
@@ -118,161 +64,142 @@ button:hover {
 
 <canvas id="matrix"></canvas>
 
-<!-- START LOADING -->
-<div id="loading">
-  <div class="loader-circle"></div>
-  <div class="loader-bar"><div></div></div>
-</div>
-
-<!-- HEADER -->
 <div class="header">
   <img src="https://img1.pixhost.to/images/11082/673355500_kotaro-md.jpg">
   <span>yuka-dev</span>
 </div>
 
-<!-- APP -->
 <div class="container">
-<h2 style="text-align:center">🔐 Hengker Encoder X</h2>
+<h2 style="text-align:center">🔐 Hengker Encoder Ultimate</h2>
 
 <input type="file" id="fileInput">
-
-<textarea id="input" rows="6" placeholder="Paste kode atau upload file..."></textarea>
+<textarea id="input" rows="5" placeholder="Paste kode / upload file..."></textarea>
 
 <div class="row">
 <select id="type">
   <option value="js">JavaScript</option>
-  <option value="java">Java</option>
-  <option value="python">Python</option>
-  <option value="html">HTML</option>
-  <option value="text">Text</option>
+  <option value="text">Text / Other</option>
 </select>
 
 <select id="level">
-  <option value="easy">Easy</option>
-  <option value="normal">Normal</option>
-  <option value="high">High</option>
+  <option value="1">Level 1</option>
+  <option value="2">Level 2</option>
+  <option value="3">Level 3</option>
+  <option value="4">Level 4</option>
+  <option value="5">Level 5</option>
+  <option value="6">Level 6</option>
 </select>
 </div>
 
-<input id="customName" placeholder="Custom encoder name">
+<div class="row">
+<button onclick="setCharset('jp')">ENC JAPAN</button>
+<button onclick="setCharset('cn')">ENC CINA</button>
+<button onclick="setCharset('kr')">ENC KOREA</button>
+<button onclick="setCharset('ar')">ENC ARAB</button>
+<button onclick="setCharset('mix')">ENC RANDOM</button>
+</div>
 
 <button onclick="startEncode()">ENCODE</button>
 
-<div id="encodeLoading">
-  <div class="encode-bar"><div></div></div>
-</div>
+<div id="encLoading"></div>
 
-<textarea id="output" rows="8" placeholder="Hasil encode..."></textarea>
-
-<input id="filename" placeholder="Nama file output (bot.enc.js)">
+<textarea id="output" rows="7" placeholder="Hasil encode..."></textarea>
+<input id="filename" placeholder="Nama file output">
 <button onclick="download()">DOWNLOAD</button>
 </div>
 
 <script>
-/* ===== START LOADING ===== */
-const loadBar = document.querySelector(".loader-bar div")
-let lp = 0
-const loadInt = setInterval(() => {
-  lp += 5
-  loadBar.style.width = lp + "%"
-  if (lp >= 100) {
-    clearInterval(loadInt)
-    setTimeout(() => loading.style.display = "none", 300)
+/* MATRIX */
+const mc=document.getElementById("matrix"),mx=mc.getContext("2d")
+mc.width=innerWidth;mc.height=innerHeight
+const mchars="01ハッカー暗号数据安全"
+const drops=Array(Math.floor(mc.width/14)).fill(1)
+setInterval(()=>{
+ mx.fillStyle="rgba(0,0,0,0.05)"
+ mx.fillRect(0,0,mc.width,mc.height)
+ mx.fillStyle="#00ff99"
+ mx.font="14px monospace"
+ drops.forEach((y,i)=>{
+  mx.fillText(mchars[Math.random()*mchars.length|0],i*14,y*14)
+  drops[i]=y*14>mc.height&&Math.random()>0.95?0:y+1
+ })
+},33)
+
+/* FILE */
+fileInput.onchange=()=>{
+ const f=fileInput.files[0]
+ if(!f)return
+ const r=new FileReader()
+ r.onload=e=>input.value=e.target.result
+ r.readAsText(f)
+}
+
+/* ENCODER */
+let charset="jp"
+const sets={
+ jp:"日本語暗号化安全",
+ cn:"加密数据安全防护",
+ kr:"암호화보안시스템",
+ ar:"تشفيرآمنبيانات",
+ mix:"日本加密암호화安全암호화"
+}
+const b64=s=>btoa(unescape(encodeURIComponent(s)))
+
+function chaos(s){
+ return s.split("").map(c=>
+  Math.random()>.6
+   ? sets[charset][Math.random()*sets[charset].length|0]
+   : c
+ ).join("")
+}
+
+function setCharset(c){charset=c}
+
+function startEncode(){
+ const log=document.getElementById("encLoading")
+ log.style.display="block"
+ log.textContent=""
+ let step=0
+ const msgs=[
+  "[+] Initializing encoder...",
+  "[+] Loading chaos engine...",
+  "[+] Applying unicode injection...",
+  "[+] Wrapping layers...",
+  "[+] Finalizing payload..."
+ ]
+ const timer=setInterval(()=>{
+  log.textContent+=msgs[step]+"\n"
+  log.scrollTop=log.scrollHeight
+  step++
+  if(step===msgs.length){
+    clearInterval(timer)
+    setTimeout(encode,20000) // 20 DETIK DELAY
   }
-}, 80)
-
-/* ===== MATRIX ===== */
-const c = document.getElementById("matrix")
-const ctx = c.getContext("2d")
-c.width = innerWidth
-c.height = innerHeight
-const chars = "01ハッカー暗号安全数据编码"
-const size = 14
-const cols = c.width / size
-const drops = Array.from({length: cols}).fill(1)
-
-setInterval(() => {
-  ctx.fillStyle = "rgba(0,0,0,0.05)"
-  ctx.fillRect(0,0,c.width,c.height)
-  ctx.fillStyle = "#00ff99"
-  ctx.font = size + "px monospace"
-  drops.forEach((y,i)=>{
-    const t = chars[Math.floor(Math.random()*chars.length)]
-    ctx.fillText(t, i*size, y*size)
-    drops[i] = y*size > c.height && Math.random()>0.95 ? 0 : y+1
-  })
-}, 33)
-
-/* ===== FILE UPLOAD ===== */
-fileInput.onchange = () => {
-  const f = fileInput.files[0]
-  if (!f) return
-  const r = new FileReader()
-  r.onload = e => input.value = e.target.result
-  r.readAsText(f)
+ },800)
 }
 
-/* ===== ENCODER CORE ===== */
-const b64 = s => btoa(unescape(encodeURIComponent(s)))
+function encode(){
+ let code=input.value
+ if(!code)return
 
-function chaosEncode(str) {
-  return str.split("").map(c =>
-    Math.random() > 0.6
-      ? String.fromCharCode(0x4e00 + Math.random()*2000)
-      : c
-  ).join("")
+ const lvl=parseInt(level.value)
+
+ for(let i=0;i<lvl;i++) code=b64(code)
+ if(lvl>=4) code=chaos(code)
+ if(lvl>=5) code=b64(code.split("").reverse().join(""))
+ if(lvl===6) code=b64("/*LOCKED*/"+code)
+
+ output.value= type.value==="js"
+ ? `(function(){eval(atob("${code}"))})();`
+ : code
 }
 
-function startEncode() {
-  const bar = document.querySelector(".encode-bar div")
-  document.getElementById("encodeLoading").style.display = "block"
-  bar.style.width = "0%"
-  let p = 0
-
-  const anim = setInterval(() => {
-    p += 10
-    bar.style.width = p + "%"
-    if (p >= 100) {
-      clearInterval(anim)
-      document.getElementById("encodeLoading").style.display = "none"
-      encode()
-    }
-  }, 80)
-}
-
-function encode() {
-  let code = input.value
-  if (!code) return
-
-  const type = document.getElementById("type").value
-  const level = document.getElementById("level").value
-  const name = document.getElementById("customName").value || "encoder-x"
-
-  if (level !== "easy") code = chaosEncode(code)
-
-  let enc = b64(code)
-  if (level !== "easy") enc = b64(enc)
-  if (level === "high") enc = b64(enc)
-
-  output.value = type === "js"
-    ? `/* Encoded by ${name} */
-(function(){
-  var _="${enc}";
-  var d=atob(_);
-  ${level !== "easy" ? "d=atob(d);" : ""}
-  ${level === "high" ? "d=atob(d);" : ""}
-  eval(d);
-})();`
-    : `/* Encoded by ${name} */\n${enc}`
-}
-
-/* ===== DOWNLOAD ===== */
-function download() {
-  if (!output.value) return
-  const a = document.createElement("a")
-  a.href = URL.createObjectURL(new Blob([output.value]))
-  a.download = filename.value || "encoded.txt"
-  a.click()
+function download(){
+ if(!output.value)return
+ const a=document.createElement("a")
+ a.href=URL.createObjectURL(new Blob([output.value]))
+ a.download=filename.value||"encoded.txt"
+ a.click()
 }
 </script>
 
